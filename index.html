@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth snap-y snap-mandatory">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio - Aatu Taskula</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet" />
+
+<!-- Tailwind CSS (Play CDN — fine for prototyping) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          /* light (default) = green + white */
+          bg:      '#f4f7f3',
+          bgsoft:  '#ffffff',
+          panel:   '#ffffff',
+          ink:     '#13241a',
+          muted:   '#5c6f63',
+          accent:  '#1f9d57',
+          /* dark = original dark + green */
+          dbg:     '#16201a',
+          dbgsoft: '#111814',
+          dpanel:  '#1d2a22',
+          dink:    '#eef3ef',
+          dmuted:  '#8aa093',
+        },
+        fontFamily: {
+          display: ['Sora', 'sans-serif'],
+          body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        },
+        keyframes: {
+          spinIn:   { '0%': { transform: 'rotate(-180deg) scale(.4)', opacity: '0' }, '100%': { transform: 'none', opacity: '1' } },
+          blink:    { '50%': { opacity: '0' } },
+          fadeDown: { '0%': { opacity: '0', transform: 'translateY(-12px)' }, '100%': { opacity: '1', transform: 'none' } },
+          fadeIn:   { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+        },
+        animation: {
+          spinIn:   'spinIn 1.3s cubic-bezier(.2,.8,.2,1) both',
+          blink:    'blink 1s steps(1) infinite',
+          fadeDown: 'fadeDown .9s ease both',
+          fadeIn:   'fadeIn 1s ease .2s both',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  body { transition: background-color .35s ease, color .35s ease; }
+  .nav-link.active { color: var(--ink-active); }
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1f9d57; border-radius: 9px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+
+<body class="bg-bg dark:bg-dbg text-ink dark:text-dink font-body antialiased overflow-x-hidden">
+
+  <!-- WORDMARK -->
+  <a href="#hero"
+     class="fixed top-[22px] left-[22px] md:top-[34px] md:left-[42px] z-[100]
+            font-display font-semibold text-[17px] tracking-[-0.01em] no-underline
+            text-ink dark:text-dink animate-fadeDown">
+    Aatudoz<span class="text-accent">.</span>
+  </a>
+
+  <!-- DARK MODE TOGGLE (top-right) -->
+  <button id="themeToggle" aria-label="Toggle dark mode"
+          class="fixed top-[18px] right-[18px] md:top-[30px] md:right-[34px] z-[100]
+                 w-11 h-11 rounded-full flex items-center justify-center
+                 border border-accent/40 bg-bgsoft dark:bg-dpanel
+                 text-accent transition-all duration-300 hover:scale-110 animate-fadeDown">
+    <span id="themeIcon" class="text-[18px]">🌙</span>
+  </button>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="relative min-h-screen flex flex-col justify-center items-center text-center overflow-hidden py-24 px-[7vw]">
+      <div class="w-[150px] h-[150px] rounded-full p-1 mb-[34px] animate-spinIn bg-[conic-gradient(from_0deg,#1f9d57,#0c5e32,#1f9d57)]">
+        <div class="w-full h-full rounded-full overflow-hidden bg-bgsoft dark:bg-dpanel">
+          <img src="aatu.jpg" alt="Aatu Taskula" class="w-full h-full object-cover" />
+        </div>
+      </div>
+      <div class="font-display text-sm tracking-[0.5em] uppercase text-muted dark:text-dmuted mb-3.5">Aatu Taskula</div>
+      <h1 class="font-display font-semibold text-[clamp(2.2rem,5vw,4rem)] tracking-[-0.02em] min-h-[1.3em]">
+        <span id="typed"></span><span class="text-accent font-normal animate-blink">_</span>
+      </h1>
+    </section>
+  </main>
+
+<script>
+  /* theme toggle */
+  const root = document.documentElement;
+  const icon = document.getElementById('themeIcon');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    root.classList.toggle('dark');
+    icon.textContent = root.classList.contains('dark') ? '☀️' : '🌙';
+  });
+
+  /* typewriter */
+  const phrases = ["Yo", "Hey", "Coffee.", "Yes"];
+  const typed = document.getElementById('typed');
+  let pi = 0, ci = 0, deleting = false;
+  function tick() {
+    const word = phrases[pi];
+    typed.textContent = word.substring(0, ci);
+    if (!deleting && ci < word.length) { ci++; setTimeout(tick, 70); }
+    else if (!deleting && ci === word.length) { deleting = true; setTimeout(tick, 1600); }
+    else if (deleting && ci > 0) { ci--; setTimeout(tick, 35); }
+    else { deleting = false; pi = (pi + 1) % phrases.length; setTimeout(tick, 350); }
+  }
+  tick();
+</script>
+</body>
+</html>
