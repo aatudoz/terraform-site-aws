@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portfolio - Aatu Taskula</title>
+<title>Aatu Taskula</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -62,6 +62,102 @@
     html { scroll-behavior: auto; }
     * { animation: none !important; transition: none !important; }
   }
+
+  /* ══ Drawing game ══════════════════════════════════════ */
+  #drawgame {
+    --dg-accent: #1f9d57;
+    --dg-line: rgba(19,36,26,0.14);
+    --dg-paper: #ffffff;          /* canvas stays white in both themes */
+  }
+  .dark #drawgame { --dg-line: rgba(238,243,239,0.16); }
+
+  #drawgame .stage {
+    position: relative; width: 100%; aspect-ratio: 1 / 1;
+    border-radius: 16px; background: var(--dg-paper);
+    border: 1px solid var(--dg-line);
+    box-shadow: 0 22px 50px -28px rgba(19,36,26,0.5);
+    overflow: hidden;
+  }
+  .dark #drawgame .stage { box-shadow: 0 22px 50px -28px rgba(0,0,0,0.75); }
+  #drawgame canvas {
+    display: block; width: 100%; height: 100%;
+    touch-action: none; cursor: crosshair; border-radius: 16px;
+  }
+
+  #drawgame .toolbar {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-top: 14px; padding: 13px 15px;
+    background: #ffffff; border: 1px solid var(--dg-line); border-radius: 14px;
+  }
+  .dark #drawgame .toolbar { background: #1d2a22; }
+
+  #drawgame .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+  #drawgame .swatch {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid #ffffff; box-shadow: 0 0 0 1px var(--dg-line);
+    cursor: pointer; transition: transform .12s ease;
+  }
+  .dark #drawgame .swatch { border-color: #1d2a22; }
+  #drawgame .swatch:hover { transform: scale(1.15); }
+  #drawgame .swatch.active { transform: scale(1.2); box-shadow: 0 0 0 2px var(--dg-accent); }
+  #drawgame .swatch.custom {
+    position: relative; overflow: hidden;
+    background: conic-gradient(#e23b2e,#f0c419,#5ba83f,#3a6fd0,#7a4fc4,#e23b2e);
+  }
+  #drawgame .swatch.custom input { position: absolute; inset: -8px; opacity: 0; cursor: pointer; }
+
+  #drawgame .divider { width: 1px; height: 26px; background: var(--dg-line); }
+
+  #drawgame .sizes { display: flex; align-items: center; gap: 10px; }
+  #drawgame .size-dot {
+    background: #13241a; border-radius: 50%; cursor: pointer;
+    opacity: .35; transition: opacity .12s ease, transform .12s ease;
+  }
+  .dark #drawgame .size-dot { background: #eef3ef; }
+  #drawgame .size-dot:hover { opacity: .7; }
+  #drawgame .size-dot.active { opacity: 1; transform: scale(1.1); }
+
+  #drawgame .tool-btns { display: flex; gap: 6px; margin-left: auto; }
+  #drawgame .icon-btn {
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid var(--dg-line);
+    border-radius: 10px; color: inherit; cursor: pointer;
+    transition: all .15s ease;
+  }
+  #drawgame .icon-btn:hover { border-color: var(--dg-accent); color: var(--dg-accent); }
+  #drawgame .icon-btn.active {
+    background: var(--dg-accent); color: #ffffff; border-color: var(--dg-accent);
+  }
+  #drawgame .icon-btn svg { width: 18px; height: 18px; }
+
+  #drawgame .actions { display: flex; gap: 10px; margin-top: 14px; }
+  #drawgame .act {
+    font-family: inherit; font-size: 14px; letter-spacing: .04em;
+    padding: 14px 22px; border-radius: 100px; cursor: pointer; flex: 1;
+    transition: transform .14s ease, background .2s ease, border-color .2s ease, color .2s ease;
+  }
+  #drawgame .act.ghost {
+    background: transparent; color: inherit; border: 1px solid var(--dg-line);
+  }
+  #drawgame .act.ghost:hover { border-color: var(--dg-accent); color: var(--dg-accent); }
+  #drawgame .act.primary {
+    background: var(--dg-accent); color: #ffffff; border: 1px solid var(--dg-accent);
+  }
+  #drawgame .act.primary:hover { transform: translateY(-2px); }
+  #drawgame .act:active { transform: translateY(0); }
+
+  #dg-toast {
+    position: fixed; left: 50%; bottom: 28px;
+    transform: translateX(-50%) translateY(20px);
+    background: #13241a; color: #f4f7f3;
+    font-size: 13px; letter-spacing: .04em;
+    padding: 12px 22px; border-radius: 100px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease; z-index: 200;
+  }
+  .dark #dg-toast { background: #1d2a22; border: 1px solid rgba(238,243,239,0.16); }
+  #dg-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 
@@ -86,7 +182,7 @@
 
   <main>
     <!-- HERO -->
-    <section id="hero" class="relative min-h-screen flex flex-col justify-center items-center text-center overflow-hidden py-24 px-[7vw]">
+    <section id="hero" class="relative snap-start min-h-screen flex flex-col justify-center items-center text-center overflow-hidden py-24 px-[7vw]">
       <div class="w-[150px] h-[150px] rounded-full p-1 mb-[34px] animate-spinIn bg-[conic-gradient(from_0deg,#1f9d57,#0c5e32,#1f9d57)]">
         <div class="w-full h-full rounded-full overflow-hidden bg-bgsoft dark:bg-dpanel">
           <img src="aatu.jpg" alt="Aatu Taskula" class="w-full h-full object-cover" />
@@ -97,7 +193,53 @@
         <span id="typed"></span><span class="text-accent font-normal animate-blink">_</span>
       </h1>
     </section>
+
+    <!-- DRAWING GAME -->
+    <section id="draw" class="snap-start min-h-screen flex flex-col justify-center items-center py-20 px-[7vw]">
+      <h2 class="font-display font-semibold text-[clamp(1.8rem,4vw,3rem)] tracking-[-0.02em] text-center mb-3">
+        Draw something
+      </h2>
+
+      <div id="drawgame" class="w-full max-w-[600px]">
+        <div class="stage">
+          <canvas id="dg-board" width="720" height="720"></canvas>
+        </div>
+
+        <div class="toolbar">
+          <div class="swatches" id="dg-swatches"></div>
+          <div class="divider"></div>
+          <div class="sizes" id="dg-sizes"></div>
+          <div class="tool-btns">
+            <button type="button" class="icon-btn" id="dg-eraser" title="Eraser" aria-label="Eraser">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3 21 8 10 19 4 19 3 13z"/><path d="M9 13 14 18"/>
+              </svg>
+            </button>
+            <button type="button" class="icon-btn" id="dg-undo" title="Undo (Ctrl+Z)" aria-label="Undo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-7L3 9"/>
+              </svg>
+            </button>
+            <button type="button" class="icon-btn" id="dg-clear" title="Clear" aria-label="Clear">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="act ghost" id="dg-next">Next drawing</button>
+          <button type="button" class="act primary" id="dg-save">Save</button>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <div id="dg-toast"></div>
 
 <script>
   /* theme toggle */
@@ -109,7 +251,7 @@
   });
 
   /* typewriter */
-  const phrases = ["Yo", "Hey", "Coffee.", "Yes"];
+  const phrases = ["Based in Rovaniemi", "Yo", "Coffee.", "Redbull?"];
   const typed = document.getElementById('typed');
   let pi = 0, ci = 0, deleting = false;
   function tick() {
@@ -121,6 +263,217 @@
     else { deleting = false; pi = (pi + 1) % phrases.length; setTimeout(tick, 350); }
   }
   tick();
+</script>
+
+<script>
+/* ══ Drawing game ════════════════════════════════════════
+   Self-contained (IIFE) so it can't collide with anything else.
+   EDIT the PROMPTS / PALETTE arrays below to customise.
+   ════════════════════════════════════════════════════════ */
+(function () {
+  const PROMPTS = [
+    'a banana', 'a house', 'a tree', 'the sun', 'a mouse',
+    'a flower', 'a fish', 'a car', 'a bird', 'a cup of coffee',
+    'a mountain', 'a smiling face', 'a rocket ship', 'a slice of pizza',
+    'a computer mouse', 'a snail', 'a butterfly', 'a sailboat', 'a friendly ghost',
+    'a cactus', 'a crown', 'a hot air balloon', 'a bicycle',
+  ];
+  const PALETTE = [
+    '#2b2622', '#8a8178', '#e23b2e', '#e87b2c', '#f0c419', '#5ba83f',
+    '#2bb5a0', '#3a6fd0', '#7a4fc4', '#d4538f', '#8a5a3c', '#f7f2e6',
+  ];
+  const SIZES = [5, 14, 30];
+  const PAPER = '#ffffff';
+
+  const canvas = document.getElementById('dg-board');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  let color = PALETTE[0];
+  let brush = SIZES[1];
+  let erasing = false;
+  let drawing = false;
+  let last = null, lastMid = null;
+  let undoStack = [];
+  let currentPrompt = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
+
+  /* prompt is drawn into the canvas (plain Arial) so it exports with the image */
+  function drawPrompt() {
+    ctx.save();
+    ctx.font = '34px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#13241a';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Draw ' + currentPrompt, W / 2, 60);   // change 60 to move it
+    ctx.restore();
+  }
+  function stampBase() {
+    ctx.fillStyle = PAPER;
+    ctx.fillRect(0, 0, W, H);
+    drawPrompt();
+  }
+  function snapshot() {
+    undoStack.push(canvas.toDataURL('image/png'));
+    if (undoStack.length > 30) undoStack.shift();
+  }
+  function restore(dataURL) {
+    const img = new Image();
+    img.onload = () => { ctx.clearRect(0, 0, W, H); ctx.drawImage(img, 0, 0, W, H); };
+    img.src = dataURL;
+  }
+
+  stampBase();
+  snapshot();
+
+  function strokeColor() { return erasing ? PAPER : color; }
+
+  function posOf(e) {
+    const r = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - r.left) / r.width * W,
+      y: (e.clientY - r.top) / r.height * H,
+    };
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    drawing = true;
+    canvas.setPointerCapture(e.pointerId);
+    last = lastMid = posOf(e);
+    ctx.beginPath();
+    ctx.fillStyle = strokeColor();
+    ctx.arc(last.x, last.y, brush / 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!drawing) return;
+    const p = posOf(e);
+    const mid = { x: (last.x + p.x) / 2, y: (last.y + p.y) / 2 };
+    ctx.strokeStyle = strokeColor();
+    ctx.lineWidth = brush;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lastMid.x, lastMid.y);
+    ctx.quadraticCurveTo(last.x, last.y, mid.x, mid.y);
+    ctx.stroke();
+    last = p;
+    lastMid = mid;
+  });
+
+  function endStroke() {
+    if (!drawing) return;
+    drawing = false;
+    snapshot();
+  }
+  canvas.addEventListener('pointerup', endStroke);
+  canvas.addEventListener('pointercancel', endStroke);
+  canvas.addEventListener('pointerleave', endStroke);
+
+  /* tools */
+  function undo() {
+    if (undoStack.length > 1) {
+      undoStack.pop();
+      restore(undoStack[undoStack.length - 1]);
+    }
+  }
+  function clearBoard() {
+    stampBase();
+    snapshot();
+  }
+  function nextDrawing() {
+    let next = currentPrompt;
+    while (next === currentPrompt) {
+      next = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
+    }
+    currentPrompt = next;
+    stampBase();
+    undoStack = [];
+    snapshot();
+  }
+
+  document.getElementById('dg-undo').addEventListener('click', undo);
+  document.getElementById('dg-clear').addEventListener('click', clearBoard);
+  document.getElementById('dg-next').addEventListener('click', nextDrawing);
+
+  const eraserBtn = document.getElementById('dg-eraser');
+  eraserBtn.addEventListener('click', () => {
+    erasing = !erasing;
+    eraserBtn.classList.toggle('active', erasing);
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      undo();
+    }
+  });
+
+  /* swatches + sizes */
+  const swatchWrap = document.getElementById('dg-swatches');
+  PALETTE.forEach((c, i) => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (i === 0 ? ' active' : '');
+    s.style.background = c;
+    s.addEventListener('click', () => {
+      color = c;
+      erasing = false;
+      eraserBtn.classList.remove('active');
+      document.querySelectorAll('#drawgame .swatch').forEach(el => el.classList.remove('active'));
+      s.classList.add('active');
+    });
+    swatchWrap.appendChild(s);
+  });
+  const custom = document.createElement('label');
+  custom.className = 'swatch custom';
+  custom.innerHTML = '<input type="color" value="#1f9d57" aria-label="Custom colour" />';
+  custom.querySelector('input').addEventListener('input', (e) => {
+    color = e.target.value;
+    erasing = false;
+    eraserBtn.classList.remove('active');
+    document.querySelectorAll('#drawgame .swatch').forEach(el => el.classList.remove('active'));
+    custom.classList.add('active');
+  });
+  swatchWrap.appendChild(custom);
+
+  const sizeWrap = document.getElementById('dg-sizes');
+  SIZES.forEach((sz, i) => {
+    const d = document.createElement('div');
+    d.className = 'size-dot' + (i === 1 ? ' active' : '');
+    const px = 8 + i * 8;
+    d.style.width = px + 'px';
+    d.style.height = px + 'px';
+    d.addEventListener('click', () => {
+      brush = sz;
+      document.querySelectorAll('#drawgame .size-dot').forEach(el => el.classList.remove('active'));
+      d.classList.add('active');
+    });
+    sizeWrap.appendChild(d);
+  });
+
+  /* save — downloads the picture, prompt included */
+  document.getElementById('dg-save').addEventListener('click', () => {
+    canvas.toBlob((b) => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = 'drawing-' + currentPrompt.replace(/\s+/g, '-') + '.png';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }, 'image/png');
+    toast('Saved!');
+  });
+
+  /* toast */
+  let toastTimer = null;
+  function toast(msg) {
+    const el = document.getElementById('dg-toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+})();
 </script>
 </body>
 </html>
