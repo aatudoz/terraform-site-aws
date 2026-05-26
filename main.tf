@@ -1,5 +1,5 @@
 # ---- PROVIDER SETUP ----
-# Declares which plugin Terraform needs, and configures it.
+# Declares plugin
 terraform {
   required_providers {
     aws = {
@@ -10,7 +10,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-north-1"   # Stockholm, closest region to Helsinki
+  region = "eu-north-1" 
 }
 
 # ---- THE BUCKET ----
@@ -20,7 +20,7 @@ resource "aws_s3_bucket" "site" {
 }
 
 # ---- WEBSITE CONFIG ----
-# Tells the bucket to behave as a website and serve index.html as the home page.
+# Tells the bucket serve as website, index.html as the home page
 resource "aws_s3_bucket_website_configuration" "site" {
   bucket = aws_s3_bucket.site.id
 
@@ -30,7 +30,6 @@ resource "aws_s3_bucket_website_configuration" "site" {
 }
 
 # ---- PUBLIC ACCESS BLOCK ----
-# Re-locked the bucket.
 resource "aws_s3_bucket_public_access_block" "site" {
   bucket = aws_s3_bucket.site.id
 
@@ -67,7 +66,6 @@ resource "aws_s3_bucket_public_access_block" "site" {
  }
 
 # ---- FILES IN THE BUCKET ----
-# Each aws_s3_object uploads one file. etag = filemd5(...) re-uploads on change.
 resource "aws_s3_object" "index" {
   bucket       = aws_s3_bucket.site.id
   key          = "index.html"
@@ -86,8 +84,8 @@ resource "aws_s3_object" "photo" {
 
 # ---- OAC (Origin Access Control) ----
 # Lets CloudFront prove its identity to the private
-# S3 bucket so it (and only it) is allowed to read the files.
-# It gets connected to the bucket inside the CloudFront distribution.
+# S3 bucket so it is allowed to read the files.
+# Gets connected to the bucket inside the CloudFront distribution.
 resource "aws_cloudfront_origin_access_control" "site" {
   name                              = "portfolio-oac"
   origin_access_control_origin_type = "s3"
@@ -103,7 +101,7 @@ resource "aws_cloudfront_distribution" "site" {
   enabled = true
   default_root_object = "index.html"
 
-  # Where cloudfront pulls files from (s3 bucket)
+  # Where cloudfront pulls files from.. s3
   origin {
     domain_name = aws_s3_bucket.site.bucket_regional_domain_name
     origin_id   = "s3-portfolio"
@@ -182,4 +180,9 @@ resource "aws_iam_role_policy_attachment" "github_actions_policy" {
 # Changed to cloudfront domain name.
 output "website_url" {
   value = "https://${aws_cloudfront_distribution.site.domain_name}"
+}
+
+# The role ARN is needed in GitHub Actions to assume the role and get permissions to deploy.
+output "role_arn" {
+  value = aws_iam_role.github_actions.arn
 }

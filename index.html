@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet" />
 
-<!-- Tailwind CSS (Play CDN — fine for prototyping) -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -17,14 +16,12 @@
     theme: {
       extend: {
         colors: {
-          /* light (default) = green + white */
           bg:      '#f4f7f3',
           bgsoft:  '#ffffff',
           panel:   '#ffffff',
           ink:     '#13241a',
           muted:   '#5c6f63',
           accent:  '#1f9d57',
-          /* dark = original dark + green */
           dbg:     '#16201a',
           dbgsoft: '#111814',
           dpanel:  '#1d2a22',
@@ -63,11 +60,10 @@
     * { animation: none !important; transition: none !important; }
   }
 
-  /* ══ Drawing game ══════════════════════════════════════ */
   #drawgame {
     --dg-accent: #1f9d57;
     --dg-line: rgba(19,36,26,0.14);
-    --dg-paper: #ffffff;          /* canvas stays white in both themes */
+    --dg-paper: #ffffff; 
   }
   .dark #drawgame { --dg-line: rgba(238,243,239,0.16); }
 
@@ -163,7 +159,7 @@
 
 <body class="bg-bg dark:bg-dbg text-ink dark:text-dink font-body antialiased overflow-x-hidden">
 
-  <!-- WORDMARK -->
+  <!-- GAYASS -->
   <a href="#hero"
      class="fixed top-[22px] left-[22px] md:top-[34px] md:left-[42px] z-[100]
             font-display font-semibold text-[17px] tracking-[-0.01em] no-underline
@@ -171,7 +167,7 @@
     Aatudoz<span class="text-accent">.</span>
   </a>
 
-  <!-- DARK MODE TOGGLE (top-right) -->
+  <!-- DARK MODE TOGGLE  -->
   <button id="themeToggle" aria-label="Toggle dark mode"
           class="fixed top-[18px] right-[18px] md:top-[30px] md:right-[34px] z-[100]
                  w-11 h-11 rounded-full flex items-center justify-center
@@ -266,10 +262,6 @@
 </script>
 
 <script>
-/* ══ Drawing game ════════════════════════════════════════
-   Self-contained (IIFE) so it can't collide with anything else.
-   EDIT the PROMPTS / PALETTE arrays below to customise.
-   ════════════════════════════════════════════════════════ */
 (function () {
   const PROMPTS = [
     'a banana', 'a house', 'a tree', 'the sun', 'a mouse',
@@ -298,7 +290,6 @@
   let undoStack = [];
   let currentPrompt = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
 
-  /* prompt is drawn into the canvas (plain Arial) so it exports with the image */
   function drawPrompt() {
     ctx.save();
     ctx.font = '34px Arial, Helvetica, sans-serif';
@@ -452,7 +443,7 @@
     sizeWrap.appendChild(d);
   });
 
-  /* save — downloads the picture, prompt included */
+  /* save downloads the picture, prompt included */
   document.getElementById('dg-save').addEventListener('click', () => {
     canvas.toBlob((b) => {
       const a = document.createElement('a');
