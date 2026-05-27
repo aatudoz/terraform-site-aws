@@ -9,9 +9,10 @@ import os
 def lambda_handler(event, context):
     bucket_name = os.environ['BUCKET_NAME']
     # Connection to S3 
-    s3_client = boto3.client('s3')
-    image_data = base64.b64decode(event['image'])
-    prompt = event['prompt']
+    s3_client = boto3.client('s3', region_name='eu-north-1')
+    body = json.loads(event['body'])
+    image_data = base64.b64decode(body['image'])
+    prompt = body['prompt']
     # Generate a unique filename for the image (example: a_banana_123123123eqwe1.png)
     filename = f"{prompt.replace(' ', '_')}_{uuid.uuid4()}.png"
 
