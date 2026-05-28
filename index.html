@@ -37,6 +37,34 @@
 <style>
   body{transition:background-color .35s ease,color .35s ease;}
 
+  .prompt-hint {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f9d57;
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 6px 14px;
+  border-radius: 100px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s ease;
+  }
+  .prompt-hint::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1f9d57;
+  }
+  .prompt-hint.show { opacity: 1; }
+
   /* lightbox */
     #lightbox {
       position: fixed; inset: 0; z-index: 200;
@@ -235,6 +263,7 @@
       <div id="settingsPanel" class="settings-panel" aria-hidden="true">
         <div class="settings-row">
           <span class="settings-label">Dark mode</span>
+          
           <button id="darkSwitch" class="switch" role="switch" aria-checked="false" aria-label="Toggle dark mode">
             <span class="switch-knob"></span>
           </button>
@@ -293,8 +322,8 @@
             </button>
           </div>
         </div>
-        <div class="snap-bottom actions">
-          <button type="button" class="act ghost" id="dg-next">Next drawing</button>
+        <div class="snap-bottom actions" style="position:relative">
+          <button type="button" class="act ghost" id="dg-next">Draw something else</button>
           <button type="button" class="act primary" id="dg-save">Save</button>
         </div>
       </div>
@@ -342,8 +371,9 @@
   document.addEventListener('click',e=>{if(!panel.contains(e.target)&&!cog.contains(e.target))setPanel(false);});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')setPanel(false);});
 
-  // sync switch to current state on load
-  darkSwitch.setAttribute('aria-checked',root.classList.contains('dark')?'true':'false');
+  // dark mode check
+  applyTheme(true);
+  darkSwitch.setAttribute('aria-checked', root.classList.contains('dark') ? 'true' : 'false');
 
   /* NAV morph */
   const nav=document.getElementById('nav');
@@ -354,7 +384,7 @@
   const sections=navLinks.map(l=>document.querySelector(l.getAttribute('href')));
   
   /* typewriter */
-  const phrases=["Based in Rovaniemi","Yo","Coffee.","Redbull?"];
+  const phrases=["Based in Rovaniemi","Queue Faceit","It works on my machine.","Still figuring it out.","Redbull"];
   const typed=document.getElementById('typed');
   let pi=0,ci=0,deleting=false;
   function tick(){
@@ -369,7 +399,25 @@
 
 <script>
 (function(){
-  const PROMPTS=['a banana','a house','a tree','the sun','a mouse','a flower','a fish','a car','a bird','a cup of coffee','a mountain','a smiling face','a rocket ship','a slice of pizza','a computer mouse','a snail','a butterfly','a sailboat','a friendly ghost','a cactus','a crown','a hot air balloon','a bicycle'];
+const PROMPTS=[
+  'a banana','a house','a tree','the sun','a mouse',
+  'a flower','a fish','a car','a bird','a cup of coffee',
+  'a mountain','a smiling face','a rocket ship','a slice of pizza',
+  'a computer mouse','a snail','a butterfly','a sailboat','a friendly ghost',
+  'a cactus','a crown','a hot air balloon','a bicycle',
+  'a cat','a dog','a frog','a duck','a penguin',
+  'an elephant','a rabbit','a bear','a shark','a whale',
+  'an ice cream cone','a donut','a watermelon','a strawberry','a mushroom',
+  'a rainbow','a lightning bolt','a cloud','a snowflake','a fire',
+  'a tent','a bridge','a lighthouse','a windmill','a castle',
+  'a sock','a hat','a boot','a backpack','a umbrella',
+  'a clock','a key','a magnifying glass','a lamp','a telephone',
+  'a sword','a shield','a bow and arrow','a treasure chest','a flag',
+  'a train','a submarine','a helicopter','a tractor','a skateboard',
+  'a guitar','a drum','a piano','a microphone','a violin',
+  'a planet','a comet','a UFO','an astronaut','a telescope',
+  'a football','a basketball','a tennis racket','a trophy','a medal',
+  ];  
   const PALETTE=['#2b2622','#8a8178','#e23b2e','#e87b2c','#f0c419','#5ba83f','#2bb5a0','#3a6fd0','#7a4fc4','#d4538f','#8a5a3c','#f7f2e6'];
   const SIZES=[5,14,30],PAPER='#ffffff';
   const canvas=document.getElementById('dg-board');if(!canvas)return;
@@ -393,6 +441,27 @@
   document.getElementById('dg-undo').addEventListener('click',undo);
   document.getElementById('dg-clear').addEventListener('click',clearBoard);
   document.getElementById('dg-next').addEventListener('click',nextDrawing);
+
+  // first visit hint on the skip button
+  if (!localStorage.getItem('hintSeen')) {
+    const hint = document.createElement('div');
+    hint.className = 'prompt-hint';
+    hint.textContent = 'Too hard? Skip it!';
+    document.querySelector('.actions').appendChild(hint);
+
+    setTimeout(() => hint.classList.add('show'), 800);
+    setTimeout(() => {
+      hint.classList.remove('show');
+      setTimeout(() => hint.remove(), 400);
+    }, 4000);
+
+    document.getElementById('dg-next').addEventListener('click', () => {
+      hint.classList.remove('show');
+      localStorage.setItem('hintSeen', 'true');
+    }, { once: true });
+
+    localStorage.setItem('hintSeen', 'true');
+  }
   const eraserBtn=document.getElementById('dg-eraser');
   eraserBtn.addEventListener('click',()=>{erasing=!erasing;eraserBtn.classList.toggle('active',erasing);});
   window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}});
