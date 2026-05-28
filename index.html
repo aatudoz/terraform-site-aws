@@ -146,6 +146,23 @@
     *{animation:none !important;transition:none !important;}
   }
 
+  /* lightbox */
+    #lightbox {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    #lightbox.open { opacity: 1; pointer-events: all; }
+    #lightbox img {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: 16px;
+      transform: scale(0.92);
+      transition: transform .25s ease;
+    }
+    #lightbox.open img { transform: scale(1); }
+
   /* DRAWING GAME */
   #drawgame{--dg-accent:#1f9d57;--dg-line:rgba(19,36,26,0.14);--dg-paper:#ffffff;}
   .dark #drawgame{--dg-line:rgba(238,243,239,0.16);}
@@ -424,6 +441,7 @@
           img.src = `https://d2pyc1f7rxko9t.cloudfront.net/${filename}`;
           img.alt = filename.replace('gallery/', '').replace('.png', '').replace(/_/g, ' ');
           img.className = 'w-full rounded-xl border border-accent/20 shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-lg cursor-pointer';
+          img.addEventListener('click', () => openLightbox(img.src, img.alt));
           grid.appendChild(img);
         });
       }
@@ -433,6 +451,25 @@
 
 loadGallery();
 })();
+
+// lightbox
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+
+function openLightbox(src, alt) {
+  lightboxImg.src = src;
+  lightboxImg.alt = alt;
+  lightbox.classList.add('open');
+}
+function closeLightbox() {
+  lightbox.classList.remove('open');
+}
+lightbox.addEventListener('click', closeLightbox);
+window.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 </script>
+
+<div id="lightbox">
+  <img id="lightbox-img" src="" alt="" />
+</div>
 </body>
 </html>
