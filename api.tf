@@ -198,3 +198,15 @@ resource "aws_lambda_permission" "retrieve" {
   function_name = aws_lambda_function.retrieve.function_name
   principal     = "apigateway.amazonaws.com"
 }
+
+
+# S3 by default tracks who uploaded each object (owner)
+# When Lambda uploads a file, S3 records Lambda's role as the owner
+# This causes CloudFront to get a 403 so this is the fix
+resource "aws_s3_bucket_ownership_controls" "gallery" {
+  bucket = aws_s3_bucket.gallery.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}

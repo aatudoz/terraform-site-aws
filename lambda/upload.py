@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     image_data = base64.b64decode(body['image'])
     prompt = body['prompt']
     # Generate a unique filename for the image (example: a_banana_123123123eqwe1.png)
-    filename = f"{prompt.replace(' ', '_')}_{uuid.uuid4()}.png"
+    filename = f"gallery/{prompt.replace(' ', '_')}_{uuid.uuid4()}.png"
 
     #Upload the image to S3
     s3_client.put_object(

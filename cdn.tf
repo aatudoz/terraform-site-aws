@@ -41,7 +41,7 @@ resource "aws_s3_bucket_policy" "site" {
             StringEquals = {
               "aws:SourceArn" = "${aws_cloudfront_distribution.site.arn}"
             }
-         }
+       }
        }
      ]
    })
