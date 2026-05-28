@@ -37,6 +37,24 @@
 <style>
   body{transition:background-color .35s ease,color .35s ease;}
 
+  /* lightbox */
+    #lightbox {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    #lightbox.open { opacity: 1; pointer-events: all; }
+    #lightbox img {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: 16px;
+      transform: scale(0.92);
+      transition: transform .25s ease;
+    }
+    #lightbox.open img { transform: scale(1); }
+
+
   /* NAV top */
   #nav{
     position:fixed;z-index:100;
@@ -146,23 +164,6 @@
     *{animation:none !important;transition:none !important;}
   }
 
-  /* lightbox */
-    #lightbox {
-      position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.85);
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity .25s ease;
-    }
-    #lightbox.open { opacity: 1; pointer-events: all; }
-    #lightbox img {
-      max-width: 90vw; max-height: 90vh;
-      border-radius: 16px;
-      transform: scale(0.92);
-      transition: transform .25s ease;
-    }
-    #lightbox.open img { transform: scale(1); }
-
   /* DRAWING GAME */
   #drawgame{--dg-accent:#1f9d57;--dg-line:rgba(19,36,26,0.14);--dg-paper:#ffffff;}
   .dark #drawgame{--dg-line:rgba(238,243,239,0.16);}
@@ -205,6 +206,7 @@
 
 <body class="bg-bg dark:bg-dbg text-ink dark:text-dink font-body antialiased overflow-x-hidden">
 
+  
   <!-- WORDMARK -->
   <div class="fixed top-[18px] left-[22px] md:top-[26px] md:left-[42px] z-[100] flex items-center gap-3 animate-fadeDown">
   <a href="#hero" class="font-display font-semibold text-[17px] tracking-[-0.01em] no-underline text-ink dark:text-dink">
@@ -310,7 +312,9 @@
 
   </main>
   <div id="dg-toast"></div>
-
+  <div id="lightbox">
+    <img id="lightbox-img" src="" alt="" />
+  </div>
 <script>
   /* theme */
   const root=document.documentElement,icon=document.getElementById('themeIcon');
@@ -467,9 +471,5 @@ function closeLightbox() {
 lightbox.addEventListener('click', closeLightbox);
 window.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 </script>
-
-<div id="lightbox">
-  <img id="lightbox-img" src="" alt="" />
-</div>
 </body>
 </html>
