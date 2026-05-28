@@ -381,46 +381,56 @@
   const szw=document.getElementById('dg-sizes');
   SIZES.forEach((sz,i)=>{const d=document.createElement('div');d.className='size-dot'+(i===1?' active':'');const px=8+i*8;d.style.width=px+'px';d.style.height=px+'px';d.addEventListener('click',()=>{brush=sz;document.querySelectorAll('#drawgame .size-dot').forEach(el=>el.classList.remove('active'));d.classList.add('active');});szw.appendChild(d);});
   
-  document.getElementById('dg-save').addEventListener('click',()=>{
-      canvas.toBlob(b=>{
+  document.getElementById('dg-save').addEventListener('click', () => {
+    const btn = document.getElementById('dg-save');
+    btn.disabled = true;
+    btn.textContent = 'Uploading...';
+    canvas.toBlob(b => {
         const reader = new FileReader();
         reader.onloadend = () => {
-          const base64 = reader.result.split(',')[1];
-          fetch('https://nqzet7adcg.execute-api.eu-north-1.amazonaws.com/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64, prompt: currentPrompt })
-          }).then(() => {
-            toast('Uploaded!');
+            const base64 = reader.result.split(',')[1];
+            fetch('https://nqzet7adcg.execute-api.eu-north-1.amazonaws.com/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64, prompt: currentPrompt })
+            }).then(() => {
+              toast('Uploaded!');
+              btn.disabled = false;
+              btn.textContent = 'Save';
+              loadGallery(() => {
+                  document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
+              });
           });
         };
         reader.readAsDataURL(b);
-    }, 'image/png'); 
+    }, 'image/png');
   });
-
   let toastTimer=null;
   function toast(msg){const el=document.getElementById('dg-toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
 
-  function loadGallery() {
+  function loadGallery(onComplete) {
+  const grid = document.getElementById('gallery-grid');
+  grid.innerHTML = '<p class="text-muted font-display text-sm col-span-full text-center" id="gallery-loading">Loading...</p>';
   fetch('https://nqzet7adcg.execute-api.eu-north-1.amazonaws.com/drawings')
     .then(r => r.json())
     .then(data => {
-      const grid = document.getElementById('gallery-grid');
       const loading = document.getElementById('gallery-loading');
       if (data.images.length === 0) {
         loading.textContent = 'No drawings yet — be the first!';
-        return;
+      } else {
+        loading.remove();
+        data.images.forEach(filename => {
+          const img = document.createElement('img');
+          img.src = `https://d2pyc1f7rxko9t.cloudfront.net/${filename}`;
+          img.alt = filename.replace('gallery/', '').replace('.png', '').replace(/_/g, ' ');
+          img.className = 'w-full rounded-xl border border-accent/20 shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-lg cursor-pointer';
+          grid.appendChild(img);
+        });
       }
-      loading.remove();
-      data.images.forEach(filename => {
-        const img = document.createElement('img');
-        img.src = `https://d2pyc1f7rxko9t.cloudfront.net/${filename}`;
-        img.alt = filename.replace('gallery/', '').replace('.png', '').replace(/_/g, ' ');
-        img.className = 'w-full rounded-xl border border-accent/20 shadow-sm transition-transform duration-500 hover:scale-150 hover:shadow-lg cursor-pointer';
-        grid.appendChild(img);
-      });
+      if (onComplete) onComplete();
     });
 }
+
 loadGallery();
 })();
 </script>
