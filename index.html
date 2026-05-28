@@ -324,7 +324,24 @@
   const cust=document.createElement('label');cust.className='swatch custom';cust.innerHTML='<input type="color" value="#1f9d57" aria-label="Custom colour" />';cust.querySelector('input').addEventListener('input',e=>{color=e.target.value;erasing=false;eraserBtn.classList.remove('active');document.querySelectorAll('#drawgame .swatch').forEach(el=>el.classList.remove('active'));cust.classList.add('active');});sw.appendChild(cust);
   const szw=document.getElementById('dg-sizes');
   SIZES.forEach((sz,i)=>{const d=document.createElement('div');d.className='size-dot'+(i===1?' active':'');const px=8+i*8;d.style.width=px+'px';d.style.height=px+'px';d.addEventListener('click',()=>{brush=sz;document.querySelectorAll('#drawgame .size-dot').forEach(el=>el.classList.remove('active'));d.classList.add('active');});szw.appendChild(d);});
-  document.getElementById('dg-save').addEventListener('click',()=>{canvas.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='drawing-'+currentPrompt.replace(/\s+/g,'-')+'.png';a.click();URL.revokeObjectURL(a.href);},'image/png');toast('Saved!');});
+  
+  document.getElementById('dg-save').addEventListener('click',()=>{
+      canvas.toBlob(b=>{
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result.split(',')[1];
+          fetch('https://nqzet7adcg.execute-api.eu-north-1.amazonaws.com/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64, prompt: currentPrompt })
+          }).then(() => {
+            toast('Uploaded!');
+          });
+        };
+        reader.readAsDataURL(b);
+    }, 'image/png'); 
+  });
+
   let toastTimer=null;
   function toast(msg){const el=document.getElementById('dg-toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
 })();
