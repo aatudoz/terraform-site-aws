@@ -100,6 +100,42 @@
   #nav.side .nav-link.active .bar{width:44px;background:#1f9d57;}
   #nav.side .nav-link.active{background:transparent !important;}
 
+  /* settings cog + panel */
+  .nav-settings{position:relative;display:flex;align-items:center;}
+
+  .nav-cog{
+    display:flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border:none;background:transparent;
+    color:#5c6f63;border-radius:100px;cursor:pointer;
+    transition:color .2s ease,background .2s ease,transform .45s cubic-bezier(.4,0,.2,1);
+  }
+  .dark .nav-cog{color:#8aa093;}
+  .nav-cog:hover{color:#1f9d57;background:rgba(31,157,87,0.09);}
+  .nav-cog svg{width:17px;height:17px;}
+  .nav-cog[aria-expanded="true"]{color:#1f9d57;transform:rotate(75deg);}
+
+  .settings-panel{
+  position:absolute;
+  top:0;                      /* align with top of the cog */
+  left:calc(100% + 12px);     /* sit to the right of the cog, 12px gap */
+  min-width:190px;
+  background:#fff;border:1px solid rgba(19,36,26,0.10);border-radius:14px;padding:6px;
+  box-shadow:0 18px 40px -22px rgba(19,36,26,0.5);
+  opacity:0;transform:translateX(-8px) scale(.97);transform-origin:left center;
+  pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:120;
+  }
+  .dark .settings-panel{background:#1d2a22;border-color:rgba(238,243,239,0.14);box-shadow:0 18px 40px -22px rgba(0,0,0,0.7);}
+  .settings-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+
+  .settings-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:8px 12px;}
+  .settings-label{font-family:'Sora',sans-serif;font-size:12px;letter-spacing:.04em;color:#13241a;}
+  .dark .settings-label{color:#eef3ef;}
+
+  .switch{position:relative;width:44px;height:24px;flex-shrink:0;border:none;border-radius:100px;cursor:pointer;background:rgba(19,36,26,0.18);transition:background .25s ease;}
+  .switch[aria-checked="true"]{background:#1f9d57;}
+  .switch-knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:transform .25s cubic-bezier(.4,0,.2,1);}
+  .switch[aria-checked="true"] .switch-knob{transform:translateX(20px);}
+
   /* scrollbar */
   ::-webkit-scrollbar{width:9px;}
   ::-webkit-scrollbar-track{background:transparent;}
@@ -165,21 +201,30 @@
   </a>
 </div>
 
-  <!-- DARK MODE TOGGLE -->
-  <button id="themeToggle" aria-label="Toggle dark mode"
-          class="fixed top-[18px] right-[18px] md:top-[26px] md:right-[34px] z-[100]
-                 w-11 h-11 rounded-full flex items-center justify-center
-                 border border-accent/40 bg-bgsoft dark:bg-dpanel
-                 text-accent transition-all duration-300 hover:scale-110 animate-fadeDown">
-    <span id="themeIcon" class="text-[18px]">🌙</span>
-  </button>
-
-  <!-- NAV: top-center pill → left sidebar on scroll -->
+  <!-- NAV: CENTER  -->
   <nav id="nav" class="animate-fadeIn" aria-label="Site navigation">
     <a href="#hero" class="nav-link" data-section="hero"><span class="bar"></span>Home</a>
     <a href="#draw" class="nav-link" data-section="draw"><span class="bar"></span>Draw</a>
     <a href="#gallery" class="nav-link" data-section="gallery"><span class="bar"></span>Gallery</a>
+    <div class="nav-settings">
+      <button id="settingsCog" class="nav-cog" aria-label="Settings" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+      <div id="settingsPanel" class="settings-panel" aria-hidden="true">
+        <div class="settings-row">
+          <span class="settings-label">Dark mode</span>
+          <button id="darkSwitch" class="switch" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+            <span class="switch-knob"></span>
+          </button>
+        </div>
+      </div>
+    </div>
   </nav>
+
+  
 
   <main>
 
@@ -229,7 +274,7 @@
             </button>
           </div>
         </div>
-        <div class="actions">
+        <div class="snap-bottom actions">
           <button type="button" class="act ghost" id="dg-next">Next drawing</button>
           <button type="button" class="act primary" id="dg-save">Save</button>
         </div>
@@ -252,10 +297,32 @@
 <script>
   /* theme */
   const root=document.documentElement,icon=document.getElementById('themeIcon');
-  document.getElementById('themeToggle').addEventListener('click',()=>{
-    root.classList.toggle('dark');
-    icon.textContent=root.classList.contains('dark')?'☀️':'🌙';
-  });
+  const cog=document.getElementById('settingsCog');
+  const panel=document.getElementById('settingsPanel');
+  const darkSwitch=document.getElementById('darkSwitch');
+
+  function applyTheme(dark){
+    root.classList.toggle('dark',dark);
+    darkSwitch.setAttribute('aria-checked',dark?'true':'false');
+  }
+  function setPanel(open){
+    panel.classList.toggle('open',open);
+    cog.setAttribute('aria-expanded',open?'true':'false');
+    panel.setAttribute('aria-hidden',open?'false':'true');
+  }
+
+  // keep the old top-right button working too, in sync
+  document.getElementById('themeToggle')?.addEventListener('click',()=>applyTheme(!root.classList.contains('dark')));
+
+  cog.addEventListener('click',e=>{e.stopPropagation();setPanel(!panel.classList.contains('open'));});
+  darkSwitch.addEventListener('click',()=>applyTheme(!root.classList.contains('dark')));
+
+  // close when clicking outside, or pressing Escape
+  document.addEventListener('click',e=>{if(!panel.contains(e.target)&&!cog.contains(e.target))setPanel(false);});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')setPanel(false);});
+
+  // sync switch to current state on load
+  darkSwitch.setAttribute('aria-checked',root.classList.contains('dark')?'true':'false');
 
   /* NAV morph */
   const nav=document.getElementById('nav');
