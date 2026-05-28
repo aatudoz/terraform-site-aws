@@ -178,6 +178,7 @@
   <nav id="nav" class="animate-fadeIn" aria-label="Site navigation">
     <a href="#hero" class="nav-link" data-section="hero"><span class="bar"></span>Home</a>
     <a href="#draw" class="nav-link" data-section="draw"><span class="bar"></span>Draw</a>
+    <a href="#gallery" class="nav-link" data-section="gallery"><span class="bar"></span>Gallery</a>
   </nav>
 
   <main>
@@ -235,6 +236,17 @@
       </div>
     </section>
 
+      <!-- GALLERY -->
+  <section id="gallery" class="snap-start min-h-screen flex flex-col justify-start items-center pt-14 pb-6 px-[7vw]">
+    <p class="font-display text-[11px] tracking-[0.42em] uppercase text-muted dark:text-dmuted mb-3">asd</p>
+    <h2 class="font-display font-semibold text-[clamp(1.6rem,3.5vw,2.6rem)] tracking-[-0.02em] text-center mb-8">
+      Everyone's drawings<span class="text-accent">.</span>
+    </h2>
+    <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-[900px]">
+      <p class="text-muted font-display text-sm col-span-full text-center" id="gallery-loading">Loading drawings...</p>
+    </div>
+  </section>
+
   </main>
   <div id="dg-toast"></div>
 
@@ -275,6 +287,15 @@
       }
     });
   },{rootMargin:'-40% 0px -40% 0px'}).observe(document.getElementById('draw'));
+  new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navLinks.forEach(l=>l.classList.remove('active'));
+        const a=navLinks.find(l=>l.getAttribute('href')==='#'+e.target.id);
+        if(a) a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-40% 0px -40% 0px'}).observe(document.getElementById('gallery'));
 
   /* typewriter */
   const phrases=["Based in Rovaniemi","Yo","Coffee.","Redbull?"];
@@ -344,6 +365,28 @@
 
   let toastTimer=null;
   function toast(msg){const el=document.getElementById('dg-toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
+
+  function loadGallery() {
+  fetch('https://nqzet7adcg.execute-api.eu-north-1.amazonaws.com/drawings')
+    .then(r => r.json())
+    .then(data => {
+      const grid = document.getElementById('gallery-grid');
+      const loading = document.getElementById('gallery-loading');
+      if (data.images.length === 0) {
+        loading.textContent = 'No drawings yet — be the first!';
+        return;
+      }
+      loading.remove();
+      data.images.forEach(filename => {
+        const img = document.createElement('img');
+        img.src = `https://d2pyc1f7rxko9t.cloudfront.net/${filename}`;
+        img.alt = filename.replace('gallery/', '').replace('.png', '').replace(/_/g, ' ');
+        img.className = 'w-full rounded-xl border border-accent/20 shadow-sm';
+        grid.appendChild(img);
+      });
+    });
+}
+loadGallery();
 })();
 </script>
 </body>
